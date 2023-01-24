@@ -1,0 +1,9 @@
+{
+  "name": "quick-rows",
+  "version": "0.1.0",
+  "title": "Quick Rows",
+  "author": "aeosynth",
+  "factorio_version": "1.1",
+  "dependencies": ["base >= 1.1"],
+  "description": "Create a row and see the item count"
+}
