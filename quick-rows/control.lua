@@ -2,6 +2,11 @@ local function generate_entities(count, name, recipe)
   local box = game.entity_prototypes[name].collision_box
   local height = math.ceil(box.right_bottom.y - box.left_top.y)
 
+  if name == 'locomotive' or name:match('-wagon$') then
+    -- TODO use connection_distance when api available
+    height = 7
+  end
+
   local entities = {}
   for i = 1, count do
     table.insert(entities, {
