@@ -42,7 +42,14 @@ local function update(e, n)
     name = stack.name
     fields = {}
   end
-  if count < 1 or not game.entity_prototypes[name] then return end
+
+  local proto = game.entity_prototypes[name]
+  if count < 1
+    or not proto
+    or not proto.flags["player-creation"]
+    or proto.flags["not-blueprintable"]
+    then return
+  end
 
   local entities = generate_entities(count, name, fields)
   player.clear_cursor()
