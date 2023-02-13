@@ -1,6 +1,7 @@
 local function generate_entities(count, name, fields)
-  local box = game.entity_prototypes[name].collision_box
-  local height = math.ceil(box.right_bottom.y - box.left_top.y)
+  -- local box = game.entity_prototypes[name].drawing_box
+  -- local height = math.ceil(box.right_bottom.y - box.left_top.y)
+  local height = game.entity_prototypes[name].tile_height
 
   if name == 'locomotive' or name:match('-wagon$') then
     -- TODO api request for connection_distance + joint_distance
@@ -35,11 +36,14 @@ local function update(e, n)
     local first = entities[1]
     name = first.name
     fields = {
+      direction = first.direction,
+      items = first.items,
       recipe = first.recipe
     }
   else
     count = 1 + n
     name = stack.name
+    -- TODO api request for stack direction
     fields = {}
   end
 
