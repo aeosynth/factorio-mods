@@ -1,6 +1,4 @@
 local function generate_entities(count, name, fields)
-  -- local box = game.entity_prototypes[name].drawing_box
-  -- local height = math.ceil(box.right_bottom.y - box.left_top.y)
   local height = game.entity_prototypes[name].tile_height
 
   if name == 'locomotive' or name:match('-wagon$') then
@@ -20,13 +18,17 @@ local function generate_entities(count, name, fields)
     end
     table.insert(entities, entity)
   end
+
   return entities
 end
 
-local function update(e, n)
+local function update(e, change)
   local player = game.get_player(e.player_index)
   local stack = player.cursor_stack
   if not stack.valid_for_read then return end
+
+  local n = change.count and change.count or 0
+  local dir = change.direction and change.direction or 0
 
   local count, name, fields
   if player.is_cursor_blueprint() then
@@ -36,7 +38,7 @@ local function update(e, n)
     local first = entities[1]
     name = first.name
     fields = {
-      direction = first.direction,
+      direction = ((first.direction or 0) + dir) % 8,
       items = first.items,
       recipe = first.recipe
     }
@@ -63,5 +65,6 @@ local function update(e, n)
   player.cursor_stack_temporary = true
 end
 
-script.on_event("qr-decrease", function(e) update(e, -1) end)
-script.on_event("qr-increase", function(e) update(e,  1) end)
+script.on_event("qr-decrease", function(e) update(e, {count = -1}) end)
+script.on_event("qr-increase", function(e) update(e, {count =  1}) end)
+script.on_event("qr-rotate",   function(e) update(e, {direction = 2}) end)
