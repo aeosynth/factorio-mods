@@ -1,20 +1,23 @@
-local function generate_entities(count, name, recipe)
+local function generate_entities(count, name, fields)
   local box = game.entity_prototypes[name].collision_box
   local height = math.ceil(box.right_bottom.y - box.left_top.y)
 
   if name == 'locomotive' or name:match('-wagon$') then
-    -- TODO use connection_distance when api available
+    -- TODO api request for connection_distance + joint_distance
     height = 7
   end
 
   local entities = {}
   for i = 1, count do
-    table.insert(entities, {
-      entity_number = i,
+    local entity = {
       name = name,
+      entity_number = i,
       position = {0, i * height},
-      recipe = recipe,
-    })
+    }
+    for k, v in pairs(fields) do
+      entity[k] = v
+    end
+    table.insert(entities, entity)
   end
   return entities
 end
@@ -24,20 +27,24 @@ local function update(e, n)
   local stack = player.cursor_stack
   if not stack.valid_for_read then return end
 
-  local count, name, recipe
+  local count, name, fields
   if player.is_cursor_blueprint() then
     local entities = player.get_blueprint_entities()
     if not entities then return end
     count = #entities + n
-    name = entities[1].name
-    recipe = entities[1].recipe
+    local first = entities[1]
+    name = first.name
+    fields = {
+      recipe = first.recipe
+    }
   else
     count = 1 + n
     name = stack.name
+    fields = {}
   end
   if count < 1 or not game.entity_prototypes[name] then return end
 
-  local entities = generate_entities(count, name, recipe)
+  local entities = generate_entities(count, name, fields)
   player.clear_cursor()
   stack.set_stack('blueprint')
   stack.set_blueprint_entities(entities)
