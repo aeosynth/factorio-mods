@@ -1,9 +1,13 @@
 local function generate_entities(count, name, fields)
-  local height = game.entity_prototypes[name].tile_height
+  local proto = game.entity_prototypes[name]
+  local side = proto.tile_height
+  if fields.direction % 4 > 0 then
+    side = proto.tile_width
+  end
 
   if name == 'locomotive' or name:match('-wagon$') then
     -- TODO api request for connection_distance + joint_distance
-    height = 7
+    side = 7
   end
 
   local entities = {}
@@ -11,7 +15,7 @@ local function generate_entities(count, name, fields)
     local entity = {
       name = name,
       entity_number = i,
-      position = {0, i * height},
+      position = {0, i * side},
     }
     for k, v in pairs(fields) do
       entity[k] = v
@@ -46,7 +50,9 @@ local function update(e, change)
     count = 1 + n
     name = stack.name
     -- TODO api request for stack direction
-    fields = {}
+    fields = {
+      direction = 0
+    }
   end
 
   local proto = game.entity_prototypes[name]
