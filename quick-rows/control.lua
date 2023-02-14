@@ -63,9 +63,12 @@ local function update(e, change)
     then return
   end
 
+  if not player.is_cursor_blueprint() then
+    player.clear_cursor()
+    stack.set_stack('blueprint')
+  end
+
   local entities = generate_entities(count, name, fields)
-  player.clear_cursor()
-  stack.set_stack('blueprint')
   stack.set_blueprint_entities(entities)
   stack.label = tostring(#entities)
   player.cursor_stack_temporary = true
